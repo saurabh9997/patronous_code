@@ -1,8 +1,7 @@
 import tweepy  # https://github.com/tweepy/tweepy
 import csv
-import re
 import pandas as pd
-from csv_file import mentioned
+from mention_process import mentioned
 
 # Twitter API credentials
 consumer_key = "52uxnTb1VxqI6by7w8Gvp7QmC"
@@ -33,7 +32,6 @@ def get_all_tweets(screen_name):
 
     # keep grabbing tweets until there are no tweets left to grab
     while len(new_tweets) > 0:
-        print(f"getting tweets before {oldest}")
 
         # all subsiquent requests use the max_id param to prevent duplicates
         new_tweets = api.user_timeline(screen_name=screen_name, count=200, max_id=oldest)
@@ -52,7 +50,7 @@ def get_all_tweets(screen_name):
     # write the csv
     with open(f'new_{screen_name}_tweets.csv', 'w', encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["id", "created_at", "text"])
+        writer.writerow(["id", "created_at", "Raw Tweets"])
         writer.writerows(outtweets)
     return tweets_analysis(screen_name)
 
@@ -60,7 +58,7 @@ def get_all_tweets(screen_name):
 def tweets_analysis(screen_name):
     df = pd.read_csv(f'new_{screen_name}_tweets.csv')
     mentiondf = mentioned(df)
-    mentiondf.to_csv('mentions.csv', ignore_index=True)
+    mentiondf.to_csv('mentions.csv', columns=['@Mention', 'Number Mentions', 'Raw Tweets'], index=False)
 
 
 if __name__ == '__main__':

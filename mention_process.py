@@ -1,23 +1,19 @@
 import pandas as pd
 import re
-import csv
-import random
+import datetime
+
 
 def mentioned(df):
     mentions = []
     for item in df.iterrows():
         match = re.findall('@[A-Za-z0-9_:]+\s',item[1][2])
         if match:
-            # print(match)
             mentions.append(match)
         else:
             mentions.append('NAN')
-            # print('NAN')
 
     df['Mention'] = mentions
     df.created_at = pd.to_datetime(df.created_at)
-
-    import datetime
     start_date = datetime.datetime.now() - datetime.timedelta(30)
     lastdayfrom = pd.to_datetime(start_date)
 
@@ -41,7 +37,8 @@ def mentioned(df):
 
     newdf = pd.DataFrame(listofdics)
     newdf.Mention = newdf.Mention.apply(lambda x: x.replace(':', ''))
-    newdf['Mention_Count'] = newdf.Mention.apply(lambda x: newdf[newdf.Mention == x].Mention.value_counts().to_list()[0])
+    newdf['@Mention'] = newdf['Mention']
+    newdf['Number Mentions'] = newdf.Mention.apply(lambda x: f'Mentioned {newdf[newdf.Mention == x].Mention.value_counts().to_list()[0]} time/times in 30 days')
     final_df = newdf.iloc[:, 2:]
     return final_df
 
