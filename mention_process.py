@@ -14,7 +14,7 @@ def mentioned(df):
 
     df['Mention'] = mentions
     df.created_at = pd.to_datetime(df.created_at)
-    start_date = datetime.datetime.now() - datetime.timedelta(30)
+    start_date = datetime.datetime.now() - datetime.timedelta(60)
     lastdayfrom = pd.to_datetime(start_date)
 
     #set index from column Date
@@ -37,7 +37,7 @@ def mentioned(df):
 
     newdf = pd.DataFrame(listofdics)
     newdf.Mention = newdf.Mention.apply(lambda x: x.replace(':', ''))
-    newdf['Number Mentions'] = newdf.Mention.apply(lambda x: f'Mentioned {newdf[newdf.Mention == x].Mention.value_counts().to_list()[0]} time/times in 30 days')
+    newdf['Number Mentions'] = newdf.Mention.apply(lambda x: f'Mentioned {newdf[newdf.Mention == x].Mention.value_counts().to_list()[0]} time/times in last 60 days')
     newdf.rename(columns={'Mention':'@Mention'}, inplace=True)
     final_df = newdf.iloc[:, 2:]
     return final_df
